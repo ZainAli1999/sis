@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "993855769329",
+    "project_id": "sis-tm",
+    "storage_bucket": "sis-tm.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:993855769329:android:b2d42572afb99e003a3750",
+        "android_client_info": {
+          "package_name": "com.example.sis"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBET9M0puyx808JJthSev-MEC3MGhQ_ZdI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
