@@ -140,8 +140,8 @@ class _LeavesPageState extends ConsumerState<LeavesPage> {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Shimmer.fromColors(
-        baseColor: context.colorScheme.surfaceDim,
-        highlightColor: context.colorScheme.shadow,
+                          baseColor: context.colorScheme.surfaceDim,
+                          highlightColor: context.colorScheme.shadow,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [

@@ -63,7 +63,7 @@ class _TaskCardState extends ConsumerState<TaskCard> {
               height: 35,
               width: 110,
               innerBoxPadding: const EdgeInsets.symmetric(horizontal: 8),
-              color: Palette.themecolor.withOpacity(0.15),
+              color: Palette.themecolor.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(30),
               child: Center(
                 child: Text(
@@ -138,8 +138,8 @@ class _TaskCardState extends ConsumerState<TaskCard> {
                             );
                           },
                           loading: () => Shimmer.fromColors(
-            baseColor: context.colorScheme.surfaceDim,
-            highlightColor: context.colorScheme.shadow,
+                            baseColor: context.colorScheme.surfaceDim,
+                            highlightColor: context.colorScheme.shadow,
                             child: CircleAvatar(
                               radius: 16,
                               backgroundColor: context.colorScheme.surface,
