@@ -4,6 +4,7 @@ import 'package:sis/core/common_widgets/custom_toast.dart';
 import 'package:sis/core/common_widgets/loading_progress.dart';
 import 'package:sis/core/enums/toast_enum.dart';
 import 'package:sis/core/extensions/theme_extension.dart';
+import 'package:sis/core/providers/firebase_providers.dart';
 import 'package:sis/core/responsive/responsive.dart';
 import 'package:sis/core/route_structure/go_navigator.dart';
 import 'package:sis/core/route_structure/go_router.dart';
@@ -50,15 +51,32 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       (_, next) {
         next?.when(
           data: (data) {
-            showToast(
-              content: 'Login Successfully!',
-              context: context,
-              toastType: ToastType.success,
-            );
-            Go.namedReplace(
-              context,
-              RouteName.homePage,
-            );
+            final user = ref.read(firebaseAuthProvider).currentUser;
+
+            if (user != null) {
+              if (user.emailVerified) {
+                showToast(
+                  content: 'Login Successfully!',
+                  context: context,
+                  toastType: ToastType.success,
+                );
+                Go.namedReplace(
+                  context,
+                  RouteName.homePage,
+                );
+              } else {
+                showToast(
+                  content:
+                      "Your email address is not verified. A new verification link has been sent to your email address.",
+                  context: context,
+                  toastType: ToastType.success,
+                );
+                Go.namedReplace(
+                  context,
+                  RouteName.emailVerificationPage,
+                );
+              }
+            }
           },
           error: (error, st) {
             showToast(

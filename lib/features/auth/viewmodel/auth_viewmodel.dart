@@ -110,6 +110,36 @@ class AuthViewModel extends _$AuthViewModel {
     }
   }
 
+  Future<void> sendVerificationEmail() async {
+    state = const AsyncValue.loading();
+    final res = await _authRepository.sendVerificationEmail();
+    switch (res) {
+      case Left(value: final l):
+        state = AsyncValue.error(l.message, StackTrace.current);
+        break;
+
+      case Right(value: final r):
+        state = AsyncValue.data(r);
+        break;
+    }
+  }
+
+  Future<void> checkEmailVerification() async {
+    state = const AsyncValue.loading();
+
+    final res = await _authRepository.checkEmailVerification();
+
+    switch (res) {
+      case Left(value: final l):
+        state = AsyncValue.error(l.message, StackTrace.current);
+        break;
+
+      case Right(value: final r):
+        state = AsyncValue.data(r);
+        break;
+    }
+  }
+
   Future<void> changePassword({
     required String currentPassword,
     required String newPassword,

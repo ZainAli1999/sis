@@ -7,6 +7,7 @@ import 'package:sis/core/splash/splash_page.dart';
 import 'package:sis/features/attendance/views/pages/attendance_page.dart';
 import 'package:sis/features/auth/views/pages/change_email_page.dart';
 import 'package:sis/features/auth/views/pages/change_password_page.dart';
+import 'package:sis/features/auth/views/pages/email_verification_page.dart';
 import 'package:sis/features/auth/views/pages/forgot_password_page.dart';
 import 'package:sis/features/auth/views/pages/login_page.dart';
 import 'package:sis/features/chat/views/pages/group_profile_page.dart';
@@ -31,6 +32,7 @@ class RouteName {
   static const String splashPage = 'splash';
   static const String onboardingPage = 'onboarding';
   static const String loginPage = 'login';
+  static const String emailVerificationPage = 'email-verification';
   static const String signupPage = 'sign-up';
   static const String attendancePage = 'attendance';
   static const String homePage = 'home';
@@ -94,6 +96,15 @@ class RouteName {
         pageBuilder: (context, state) {
           return const MaterialPage(
             child: LoginPage(),
+          );
+        },
+      ),
+      GoRoute(
+        path: '/$emailVerificationPage',
+        name: emailVerificationPage,
+        pageBuilder: (context, state) {
+          return const MaterialPage(
+            child: EmailVerificationPage(),
           );
         },
       ),

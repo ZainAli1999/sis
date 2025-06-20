@@ -49,15 +49,37 @@ class AuthRepository {
         password: password,
       );
 
-      final uid = userCredential.user!.uid;
+      final user = userCredential.user;
+      if (user == null) {
+        return Left(Failure("User not found."));
+      }
+
+      final uid = user.uid;
       final userDocSnapshot = await _users.doc(uid).get();
 
       if (!userDocSnapshot.exists) {
         return Left(Failure("User data not found."));
       }
 
-      final userData =
+      var userData =
           AuthModel.fromMap(userDocSnapshot.data() as Map<String, dynamic>);
+
+      if (!user.emailVerified) {
+        await user.sendEmailVerification();
+
+        if (newDeviceToken.isNotEmpty) {
+          await _users.doc(uid).update({
+            'deviceTokens': FieldValue.arrayUnion(newDeviceToken),
+          });
+
+          userData = userData.copyWith(
+            deviceTokens:
+                {...userData.deviceTokens, ...newDeviceToken}.toList(),
+          );
+        }
+
+        return Right(userData);
+      }
 
       if (userData.status != 1) {
         return Left(
@@ -65,17 +87,18 @@ class AuthRepository {
         );
       }
 
-      final updatedTokens = {
-        ...userData.deviceTokens,
-        ...newDeviceToken,
-      }.toList();
+      if (newDeviceToken.isNotEmpty) {
+        final updatedTokens =
+            {...userData.deviceTokens, ...newDeviceToken}.toSet().toList();
 
-      await _users.doc(uid).update({
-        'deviceTokens': updatedTokens,
-      });
+        await _users.doc(uid).update({
+          'deviceTokens': updatedTokens,
+        });
 
-      final updatedUser = userData.copyWith(deviceTokens: updatedTokens);
-      return Right(updatedUser);
+        userData = userData.copyWith(deviceTokens: updatedTokens);
+      }
+
+      return Right(userData);
     } on FirebaseAuthException catch (e) {
       final errorMessages = {
         "invalid-email": "Your email address appears to be malformed.",
@@ -88,18 +111,40 @@ class AuthRepository {
         "too-many-requests": "Too many requests. Please try again later.",
         "operation-not-allowed": "Email and Password sign-in is not enabled.",
       };
+
       return Left(
-        Failure(
-          errorMessages[e.code] ?? "An error occurred. Code: ${e.code}",
-        ),
+        Failure(errorMessages[e.code] ?? "An error occurred. Code: ${e.code}"),
       );
     } catch (e, stackTrace) {
       log("Unknown error in signInUser: $e", stackTrace: stackTrace);
-      return Left(
-        Failure(
-          "An unknown error occurred.",
-        ),
-      );
+      return Left(Failure("An unknown error occurred."));
+    }
+  }
+
+  FutureEither sendVerificationEmail() async {
+    try {
+      final user = _auth.currentUser;
+      if (user != null && !user.emailVerified) {
+        await user.sendEmailVerification();
+        return const Right(true);
+      }
+      return Left(Failure("User not found or email address already verified"));
+    } catch (e) {
+      return Left(Failure(e.toString()));
+    }
+  }
+
+  FutureEither checkEmailVerification() async {
+    try {
+      final user = _auth.currentUser;
+      if (user != null && user.emailVerified) {
+        await user.reload();
+        final updatedUser = _auth.currentUser;
+        return Right(updatedUser!);
+      }
+      return Left(Failure("User not found"));
+    } catch (e) {
+      return Left(Failure(e.toString()));
     }
   }
 
